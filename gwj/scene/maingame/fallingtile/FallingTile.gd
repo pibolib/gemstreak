@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-const G = 4
+const G = 6
 var type = 0
 var poslastframe = Vector2(0,0)
 var motion = Vector2(0,1)
@@ -20,7 +20,7 @@ func _ready():
 	else:
 		$Sprite.region_rect.position = spritetable[type]
 	calculate_tilepos()
-	print(tilepos)
+	#print(tilepos)
 
 func _physics_process(delta):
 	calculate_tilepos()
@@ -30,9 +30,11 @@ func _physics_process(delta):
 		settletime += delta
 	else:
 		settletime = 0
-	if settletime >= 0.5:
+	if settletime >= 0.75:
 		calculate_tilepos()
 		get_parent().set_cell(tilepos.x,tilepos.y,type)
+		get_parent().get_parent().check_for_line(tilepos.y)
+		get_parent().get_parent().check_for_falling(tilepos.y)
 		print("h at "+String(tilepos))
 		queue_free()
 	poslastframe = position
