@@ -3,6 +3,8 @@ extends Node
 var fallingtile = preload("res://scene/maingame/fallingtile/FallingTile.tscn")
 var lineclearanim = preload("res://scene/maingame/clearanims/LineClearAnim.tscn")
 var garbageclearanim = preload("res://scene/maingame/clearanims/GarbageClearAnim.tscn")
+var specialclearanim = preload("res://scene/maingame/clearanims/specialclearanim/SpecialClearAnim.tscn")
+var text = preload("res://scene/maingame/textpopup/Text.tscn")
 
 #game variables
 var score = 0
@@ -12,12 +14,14 @@ var streaktime = 0
 
 var lastcolor = -1
 var colorstreak = 0
+var colorstreakbonus = false
 var colorstreaktable = [
 	Vector2(208,64),
 	Vector2(235,64),
 	Vector2(262,64)
 ]
 
+var piecenum = 1
 var currenttri = [0,0,0]
 var nexttri = [0,0,0]
 var currenttick = 0
@@ -26,6 +30,9 @@ var garbagelevel = 0
 
 var time = 0
 var test = false
+
+var life = 120
+var mlife = 120
 
 var mousetilepos = Vector2(0,0)
 var mposcenter = Vector2(0,0)
@@ -41,13 +48,43 @@ func _ready():
 	currenttri = generate_pieces()
 	nexttri = generate_pieces()
 func _process(delta):
+	if colorstreak >= 5 and !colorstreakbonus:
+		score += 1000
+		var mytext2 = text.instance()
+		mytext2.position = Vector2(128,16)
+		mytext2.text = "COLOR STREAK BONUS +1000"
+		mytext2.special = true
+		add_child(mytext2)
+		for i in 6:
+			for j in 20:
+				if $Board.get_cell(i,j) == lastcolor:
+					$Board.set_cell(i,j,-1)
+					score += 20
+					var mytext = text.instance()
+					mytext.position = $Board.map_to_world(Vector2(i,j)) + Vector2(8,8)
+					mytext.text = "+20"
+					$Board.add_child(mytext)
+					var myanim = specialclearanim.instance()
+					myanim.position = $Board.map_to_world(Vector2(i,j)) + Vector2(8,8)
+					myanim.type = lastcolor
+					$Board.add_child(myanim)
+				if $Board.get_cell(i,j) == 3:
+					$Board.set_cell(i,j,-1)
+					score += 5
+					var mytext = text.instance()
+					mytext.position = $Board.map_to_world(Vector2(i,j)) + Vector2(8,8)
+					mytext.text = "+5"
+					$Board.add_child(mytext)
+					var myanim = garbageclearanim.instance()
+					myanim.position = $Board.map_to_world(Vector2(i,j)) + Vector2(8,8)
+					$Board.add_child(myanim)
+		colorstreakbonus = true
+	life -= delta
 	falltimer -= delta
 	if falltimer <= 0:
-		falltimer = 0.0625
-		check_for_falling(currenttick)
-		currenttick += 1
-		if currenttick == 17:
-			currenttick = -2
+		falltimer = 0.25
+		for i in 20:
+			check_for_falling(17-i)
 	time += delta
 	if streaktime > 0:
 		streaktime -= delta
@@ -59,7 +96,7 @@ func _process(delta):
 	process_mouse()
 
 func update_info():
-	$Info.text = "Score: "+String(score)+"\nStreak: "+String(streak)+" ("+String(streaktime)+")\nColor Streak: "+String(colorstreak)+"\nGarbage Level: "+String(garbagelevel)+"\nMouse Position: "+String(mousetilepos)
+	$Info.text = "Streak: "+String(streak)+" ("+String(streaktime)+")\nGarbage Level: "+String(garbagelevel)
 	$NextDisplay.set_cell(2,4,currenttri[0])
 	$NextDisplay.set_cell(1,5,currenttri[1])
 	$NextDisplay.set_cell(2,5,currenttri[2])
@@ -70,6 +107,8 @@ func update_info():
 	$UI/Score.text = String(score).pad_zeros(5)
 	if lastcolor != -1:
 		$Streak.region_rect.position = colorstreaktable[lastcolor]
+	$UI/ColorStreak.text = String(colorstreak).pad_zeros(2)
+	$UI/Time.text = String(int(life/60))+":"+String(int(life)%60).pad_zeros(2)
 func update_board():
 	pass
 
@@ -89,14 +128,23 @@ func check_for_line(row):
 				var myanim = garbageclearanim.instance()
 				myanim.position = $Board.map_to_world(Vector2(i,row-1)) + Vector2(8,8)
 				$Board.add_child(myanim)
+				var mytext = text.instance()
+				mytext.position = $Board.map_to_world(Vector2(i,row-1)) + Vector2(8,8)
+				mytext.text = "+10"
+				$Board.add_child(mytext)
 				score += 10
 			if $Board.get_cell(i,row+1) == 3:
 				$Board.set_cell(i,row+1,-1)
 				var myanim = garbageclearanim.instance()
 				myanim.position = $Board.map_to_world(Vector2(i,row+1)) + Vector2(8,8)
 				$Board.add_child(myanim)
+				var mytext = text.instance()
+				mytext.position = $Board.map_to_world(Vector2(i,row+1)) + Vector2(8,8)
+				mytext.text = "+10"
+				$Board.add_child(mytext)
 				score += 10
 		score += 100 + streak*10
+		life += (5+streak)
 		streak += 1
 		if color == lastcolor:
 			colorstreak += 1
@@ -104,8 +152,15 @@ func check_for_line(row):
 		else:
 			colorstreak = 0
 			lastcolor = color
+			colorstreakbonus = false
 		streaktime = 10
 		garbagelevel -= 1
+		if garbagelevel > 0:
+			var mytext4 = text.instance()
+			mytext4.position = Vector2(128,16)
+			mytext4.text = "GARBAGE LEVEL DOWN!"
+			mytext4.special = true
+			add_child(mytext4)
 		var myanim = lineclearanim.instance()
 		myanim.type = color
 		myanim.position.x = 48
@@ -113,6 +168,29 @@ func check_for_line(row):
 			myanim.position.x += 8
 		myanim.position.y = 8*row+8
 		$Board.add_child(myanim)
+		var mytext = text.instance()
+		mytext.text = "+100"
+		mytext.position.x = 48
+		if row%2 == 1:
+			mytext.position.x += 8
+		mytext.position.y = 8*row+8
+		$Board.add_child(mytext)
+		if streak > 1:
+			var mytext2 = text.instance()
+			mytext2.text = "STREAK +"+String(10*(streak-1))
+			mytext2.position.x = 48
+			if row%2 == 1:
+				mytext2.position.x += 8
+			mytext2.position.y = 8*row+16
+			$Board.add_child(mytext2)
+		if colorstreak > 0:
+			var mytext3 = text.instance()
+			mytext3.text = "COLOR +"+String(25*(colorstreak))
+			mytext3.position.x = 48
+			if row%2 == 1:
+				mytext3.position.x += 8
+			mytext3.position.y = 8*row+24
+			$Board.add_child(mytext3)
 	for i in 6:
 		for j in 17:
 			if $Board.get_cell(i,16-j+1) == -1:
@@ -179,12 +257,18 @@ func process_mouse():
 	if Input.is_action_just_released("mouse_right"):
 		for i in 3:
 			currenttri[i] = nexttri[i]
+		piecenum += 1
 		nexttri = generate_pieces()
 		garbagelevel += 1
 		for i in garbagelevel:
 			$Board.set_cell(currentgarbage,0,3)
 			currentgarbage += 1
 			currentgarbage = currentgarbage % 6
+		var mytext2 = text.instance()
+		mytext2.position = Vector2(128,16)
+		mytext2.text = "GARBAGE LEVEL "+String(min(garbagelevel,6))+"!"
+		mytext2.special = true
+		add_child(mytext2)
 	if Input.is_action_just_released("mouse_left"):
 		if canplace:
 			var tnum = 0
@@ -198,9 +282,15 @@ func process_mouse():
 				tnum += 1
 			for i in 3:
 				currenttri[i] = nexttri[i]
+			piecenum += 1
 			nexttri = generate_pieces()
 			for i in 17:
 				check_for_line(i)
 func generate_pieces():
 	var array = [randi()%3,randi()%3,randi()%3]
+	if piecenum % 10 == 0:
+		array[1] = 3
+	if piecenum % 30 == 0:
+		for i in 3:
+			array[i] = 3
 	return array
