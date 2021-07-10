@@ -1,9 +1,9 @@
-extends KinematicBody2D
+extends Node2D
 
-const G = 6
+const G = 800
 var type = 0
 var poslastframe = Vector2(0,0)
-var motion = Vector2(0,1)
+var motion = Vector2(0,-500)
 var gravity = Vector2(0,G)
 var spritetable = [
 	Vector2(0,0),
@@ -20,28 +20,20 @@ func _ready():
 	else:
 		$Sprite.region_rect.position = spritetable[type]
 	calculate_tilepos()
-	#print(tilepos)
 
-func _physics_process(delta):
+func _process(delta):
+	motion += gravity * delta
+	position += motion * delta
 	calculate_tilepos()
-	motion += gravity
-	motion = move_and_slide(motion,Vector2(0,-1),false,4,0.785398,false)
-	if abs(position.x-poslastframe.x) < 1 and abs(position.y-poslastframe.y) < 1:
-		settletime += delta
-	else:
-		settletime = 0
-	if settletime >= 0.75:
-		calculate_tilepos()
-		get_parent().set_cell(tilepos.x,tilepos.y,type)
-		get_parent().get_parent().check_for_line(tilepos.y)
-		get_parent().get_parent().check_for_falling(tilepos.y)
-		print("h at "+String(tilepos))
+	if get_parent().get_cell(tilepos.x,tilepos.y+2) != -1 and motion.y > 0 and tilepos.y >= 0:
+		if get_parent().get_cell(tilepos.x,tilepos.y) == -1:
+			get_parent().set_cell(tilepos.x,tilepos.y,type)
+			get_parent().get_parent().check_for_line(tilepos.y)
+		else:
+			get_parent().set_cell(tilepos.x,tilepos.y-1,type)
+			get_parent().get_parent().check_for_line(tilepos.y-1)
 		queue_free()
-	poslastframe = position
 func calculate_tilepos():
-	var intpos = [int(position.x),int(position.y)]
-	if intpos[1] % 16 < 8:
-		tilepos.x = intpos[0]/16
-	else:
-		tilepos.x = int(intpos[0]/16)
-	tilepos.y = intpos[1]/8
+	tilepos = get_parent().world_to_map(Vector2(position.x,position.y))
+	tilepos.x = clamp(tilepos.x,0,3000)
+	tilepos.y = clamp(tilepos.y,0,3000)
