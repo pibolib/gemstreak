@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://scene/maingame/gametileset.png" type="Texture" id=1]
 [ext_resource path="res://scene/maingame/Tiles.tres" type="TileSet" id=2]
@@ -7,6 +7,13 @@
 [ext_resource path="res://scene/maingame/uibits.png" type="Texture" id=5]
 [ext_resource path="res://04B_25_.TTF" type="DynamicFontData" id=6]
 [ext_resource path="res://scene/maingame/ConnectionsSet.tres" type="TileSet" id=7]
+[ext_resource path="res://sfx/clear.wav" type="AudioStream" id=8]
+[ext_resource path="res://sfx/color.wav" type="AudioStream" id=9]
+[ext_resource path="res://sfx/fall.wav" type="AudioStream" id=10]
+[ext_resource path="res://sfx/gameover.wav" type="AudioStream" id=11]
+[ext_resource path="res://sfx/rotate.wav" type="AudioStream" id=12]
+[ext_resource path="res://sfx/place.wav" type="AudioStream" id=13]
+[ext_resource path="res://sfx/discard.wav" type="AudioStream" id=14]
 
 [sub_resource type="DynamicFont" id=1]
 size = 8
@@ -50,6 +57,22 @@ texture = ExtResource( 5 )
 region_enabled = true
 region_rect = Rect2( 0, 0, 50, 127 )
 
+[node name="Streak2" type="Sprite" parent="."]
+position = Vector2( 217, 81 )
+z_index = 2
+texture = ExtResource( 5 )
+region_enabled = true
+region_rect = Rect2( 60, 6, 36, 74 )
+
+[node name="Streak3" type="Sprite" parent="."]
+position = Vector2( 203, 54 )
+z_index = 2
+texture = ExtResource( 5 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 112, 16, 16, 60 )
+region_filter_clip = true
+
 [node name="Board" type="TileMap" parent="."]
 position = Vector2( 79, 24 )
 tile_set = ExtResource( 2 )
@@ -91,6 +114,7 @@ visible = false
 margin_right = 64.0
 margin_bottom = 14.0
 custom_fonts/font = SubResource( 1 )
+text = "K"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -112,12 +136,25 @@ __meta__ = {
 }
 
 [node name="ColorStreak" type="Label" parent="UI"]
-margin_left = 171.0
+margin_left = 172.0
 margin_top = 163.0
-margin_right = 197.0
+margin_right = 198.0
 margin_bottom = 175.0
 custom_fonts/font = SubResource( 2 )
-text = "00"
+text = "0"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Streak" type="Label" parent="UI"]
+margin_left = 199.0
+margin_top = 102.0
+margin_right = 225.0
+margin_bottom = 114.0
+custom_fonts/font = SubResource( 2 )
+text = "0"
 align = 1
 valign = 1
 __meta__ = {
@@ -136,3 +173,35 @@ valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="Clear" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource( 8 )
+bus = "SFX"
+
+[node name="ColorStreak" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource( 9 )
+bus = "SFX"
+
+[node name="Fall" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource( 10 )
+volume_db = -11.107
+bus = "SFX"
+
+[node name="Rotate" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource( 12 )
+volume_db = -6.058
+bus = "SFX"
+
+[node name="Place" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource( 13 )
+bus = "SFX"
+
+[node name="Discard" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource( 14 )
+bus = "SFX"
+
+[node name="GameOver" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource( 11 )
+bus = "SFX"

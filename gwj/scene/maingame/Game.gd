@@ -57,7 +57,9 @@ func _process(delta):
 				var tile = $Board.get_cell(i,j-2)
 				if tile != -1 and tile != 8 and tile != 4:
 					$Board.set_cell(i,j-2,8)
-					gameover = true
+		if !gameover:
+			$Audio/GameOver.playing = true
+		gameover = true
 	scrtick -= delta
 	if scrtick <= 0:
 		for i in 6:
@@ -65,9 +67,9 @@ func _process(delta):
 				life -= 2
 		update_board()
 		scrtick = 0.0625
-		if score-dscore > 100:
+		if score-dscore > 101:
 			dscore += 100
-		elif score-dscore > 10:
+		elif score-dscore > 11:
 			dscore += 10
 		elif score > dscore:
 			dscore += 1
@@ -76,7 +78,7 @@ func _process(delta):
 		life += 15
 		var mytext2 = text.instance()
 		mytext2.position = Vector2(128,16)
-		mytext2.text = "COLOR STREAK BONUS +1000"
+		mytext2.text = "CONSECUTIVE COLOR BONUS +1000"
 		mytext2.special = true
 		add_child(mytext2)
 		for i in 6:
@@ -110,10 +112,11 @@ func _process(delta):
 		for i in 22:
 			check_for_falling(17-i)
 	time += delta
-	if streaktime > 0:
-		streaktime -= delta
-	else:
-		streak = 0
+	if !gameover:
+		if streaktime > 0:
+			streaktime -= delta
+		else:
+			streak = 0
 	streaktime = clamp(streaktime,0,10)
 	garbagelevel = clamp(garbagelevel,0,6)
 	life = clamp(life,0,180)
@@ -134,6 +137,9 @@ func update_info():
 		$Streak.region_rect.position = colorstreaktable[lastcolor]
 	$UI/ColorStreak.text = String(colorstreak).pad_zeros(2)
 	$UI/Time.text = String(int(life/60))+":"+String(int(life)%60).pad_zeros(2)
+	$UI/Streak.text = String(streak)
+	$Streak3.offset.y = floor(60*((10-streaktime)/10))+1
+	$Streak3.region_rect.size.y = floor(60*(streaktime/10))
 func update_board():
 	$BoardConnections.clear()
 	for i in 6:
@@ -172,6 +178,8 @@ func check_for_line(row):
 				mytext.text = "+10"
 				$Board.add_child(mytext)
 				score += 10
+		$Audio/Clear.pitch_scale = rand_range(0.9,1.1)
+		$Audio/Clear.playing = true
 		score += 100 + streak*10
 		life += (5+streak)
 		var mytext5 = text.instance()
@@ -183,6 +191,8 @@ func check_for_line(row):
 		if color == lastcolor:
 			colorstreak += 1
 			score += 25*colorstreak
+			$Audio/ColorStreak.pitch_scale = pitch_scale_whole(colorstreak-1)
+			$Audio/ColorStreak.playing = true
 		else:
 			colorstreak = 0
 			lastcolor = color
@@ -237,15 +247,24 @@ func check_for_falling(row):
 				if $Board.get_cell(i,j+1) == -1:
 					$Board.set_cell(i,j+1,$Board.get_cell(i,j))
 					$Board.set_cell(i,j,-1)
+					$Audio/Fall.pitch_scale = rand_range(0.9,1.1)
+					$Audio/Fall.playing = true
+					check_for_line(j+1)
 				else:
 					if j%2 == 0:
 						if $Board.get_cell(i-1,j+1) == -1:
 							$Board.set_cell(i-1,j+1,$Board.get_cell(i,j))
 							$Board.set_cell(i,j,-1)
+							$Audio/Fall.pitch_scale = rand_range(0.9,1.1)
+							$Audio/Fall.playing = true
+							check_for_line(j+1)
 					else:
 						if $Board.get_cell(i+1,j+1) == -1:
 							$Board.set_cell(i+1,j+1,$Board.get_cell(i,j))
 							$Board.set_cell(i,j,-1)
+							$Audio/Fall.pitch_scale = rand_range(0.9,1.1)
+							$Audio/Fall.playing = true
+							check_for_line(j+1)
 func process_mouse():
 	$BoardPreview.clear()
 	mposcenter = get_viewport().get_mouse_position()
@@ -284,16 +303,20 @@ func process_mouse():
 			currenttri[0] = currenttri[2]
 			currenttri[2] = currenttri[1]
 			currenttri[1] = save
+			$Audio/Rotate.playing = true
 		if Input.is_action_just_released("mouse_down"):
 			var save = currenttri[2]
 			currenttri[2] = currenttri[0]
 			currenttri[0] = currenttri[1]
 			currenttri[1] = save
+			$Audio/Rotate.playing = true
 		if Input.is_action_just_released("mouse_right"):
 			for i in 3:
 				currenttri[i] = nexttri[i]
 			piecenum += 1
 			nexttri = generate_pieces()
+			$Audio/Discard.pitch_scale = rand_range(0.9,1.1)
+			$Audio/Discard.playing = true
 			garbagelevel += 1
 			for i in garbagelevel:
 				$Board.set_cell(currentgarbage,0,3)
@@ -306,6 +329,8 @@ func process_mouse():
 			add_child(mytext2)
 		if Input.is_action_just_released("mouse_left"):
 			if canplace:
+				$Audio/Place.pitch_scale = rand_range(0.9,1.1)
+				$Audio/Place.playing = true
 				var tnum = 0
 				for tile in $BoardPreview.get_used_cells():
 					if $Board.get_cell(tile.x,tile.y) != -1:
@@ -329,3 +354,8 @@ func generate_pieces():
 		for i in 3:
 			array[i] = 3
 	return array
+
+func pitch_scale_whole(value):
+	var proc = min(value,21)
+	var table = [1,1.122462,1.259921,1.334840,1.498307,1.681793,1.887749,2,2*1.122462,2*1.259921,2*1.334840,2*1.498307,2*1.681793,2*1.887749,4,4*1.122462,4*1.259921,4*1.334840,4*1.498307,4*1.681793,4*1.887749,8]
+	return table[proc]
