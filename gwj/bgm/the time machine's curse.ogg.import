@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/the time machine's curse.ogg-5b4f4605df4364ebc387b42b74799cf0.oggstr"
+
+[deps]
+
+source_file="res://bgm/the time machine's curse.ogg"
+dest_files=[ "res://.import/the time machine's curse.ogg-5b4f4605df4364ebc387b42b74799cf0.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=11.63

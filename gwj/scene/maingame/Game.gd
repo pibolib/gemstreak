@@ -8,6 +8,9 @@ var text = preload("res://scene/maingame/textpopup/Text.tscn")
 
 #game variables
 var score = 0
+var dscore = 0
+var scrtick = 0
+var scoregoal = 1000
 
 var streak = 0
 var streaktime = 0
@@ -32,7 +35,7 @@ var time = 0
 var test = false
 
 var life = 120
-var mlife = 120
+var gameover = false
 
 var mousetilepos = Vector2(0,0)
 var mposcenter = Vector2(0,0)
@@ -48,8 +51,29 @@ func _ready():
 	currenttri = generate_pieces()
 	nexttri = generate_pieces()
 func _process(delta):
+	if life == 0:
+		for i in 6:
+			for j in 20:
+				var tile = $Board.get_cell(i,j-2)
+				if tile != -1 and tile != 8 and tile != 4:
+					$Board.set_cell(i,j-2,8)
+					gameover = true
+	scrtick -= delta
+	if scrtick <= 0:
+		for i in 6:
+			if $Board.get_cell(i,-1) != -1:
+				life -= 2
+		update_board()
+		scrtick = 0.0625
+		if score-dscore > 100:
+			dscore += 100
+		elif score-dscore > 10:
+			dscore += 10
+		elif score > dscore:
+			dscore += 1
 	if colorstreak >= 5 and !colorstreakbonus:
 		score += 1000
+		life += 15
 		var mytext2 = text.instance()
 		mytext2.position = Vector2(128,16)
 		mytext2.text = "COLOR STREAK BONUS +1000"
@@ -83,7 +107,7 @@ func _process(delta):
 	falltimer -= delta
 	if falltimer <= 0:
 		falltimer = 0.25
-		for i in 20:
+		for i in 22:
 			check_for_falling(17-i)
 	time += delta
 	if streaktime > 0:
@@ -92,6 +116,7 @@ func _process(delta):
 		streak = 0
 	streaktime = clamp(streaktime,0,10)
 	garbagelevel = clamp(garbagelevel,0,6)
+	life = clamp(life,0,180)
 	update_info()
 	process_mouse()
 
@@ -104,13 +129,17 @@ func update_info():
 	$NextDisplay.set_cell(2,8,nexttri[0])
 	$NextDisplay.set_cell(1,9,nexttri[1])
 	$NextDisplay.set_cell(2,9,nexttri[2])
-	$UI/Score.text = String(score).pad_zeros(5)
+	$UI/Score.text = String(dscore).pad_zeros(5)+"\n"+String(scoregoal).pad_zeros(5)
 	if lastcolor != -1:
 		$Streak.region_rect.position = colorstreaktable[lastcolor]
 	$UI/ColorStreak.text = String(colorstreak).pad_zeros(2)
 	$UI/Time.text = String(int(life/60))+":"+String(int(life)%60).pad_zeros(2)
 func update_board():
-	pass
+	$BoardConnections.clear()
+	for i in 6:
+		for j in 20:
+			if $Board.get_cell(i,j) == $Board.get_cell(i+1,j):
+				$BoardConnections.set_cell(i,j,$Board.get_cell(i,j))
 
 func check_for_line(row):
 	var color = $Board.get_cell(0,row)
@@ -118,7 +147,7 @@ func check_for_line(row):
 	for i in 6:
 		if $Board.get_cell(i,row) != color:
 			canclear = false
-	if color == -1 or color == 3:
+	if color == -1 or color == 3 or color == 8:
 		canclear = false
 	if canclear:
 		for i in 6:
@@ -145,6 +174,11 @@ func check_for_line(row):
 				score += 10
 		score += 100 + streak*10
 		life += (5+streak)
+		var mytext5 = text.instance()
+		mytext5.position = Vector2(40,144)
+		mytext5.text = "+"+String(5+streak)
+		mytext5.time = 0.4
+		add_child(mytext5)
 		streak += 1
 		if color == lastcolor:
 			colorstreak += 1
@@ -244,48 +278,49 @@ func process_mouse():
 		else:
 			$BoardPreview.set_cell(mousetilepos.x,mousetilepos.y+1,6)
 			canplace = false
-	if Input.is_action_just_released("mouse_up"):
-		var save = currenttri[0]
-		currenttri[0] = currenttri[2]
-		currenttri[2] = currenttri[1]
-		currenttri[1] = save
-	if Input.is_action_just_released("mouse_down"):
-		var save = currenttri[2]
-		currenttri[2] = currenttri[0]
-		currenttri[0] = currenttri[1]
-		currenttri[1] = save
-	if Input.is_action_just_released("mouse_right"):
-		for i in 3:
-			currenttri[i] = nexttri[i]
-		piecenum += 1
-		nexttri = generate_pieces()
-		garbagelevel += 1
-		for i in garbagelevel:
-			$Board.set_cell(currentgarbage,0,3)
-			currentgarbage += 1
-			currentgarbage = currentgarbage % 6
-		var mytext2 = text.instance()
-		mytext2.position = Vector2(128,16)
-		mytext2.text = "GARBAGE LEVEL "+String(min(garbagelevel,6))+"!"
-		mytext2.special = true
-		add_child(mytext2)
-	if Input.is_action_just_released("mouse_left"):
-		if canplace:
-			var tnum = 0
-			for tile in $BoardPreview.get_used_cells():
-				if $Board.get_cell(tile.x,tile.y) != -1:
-					var mytile = fallingtile.instance()
-					mytile.position = $Board.map_to_world(tile)
-					mytile.type = $Board.get_cell(tile.x,tile.y)
-					$Board.add_child(mytile)
-				$Board.set_cell(tile.x,tile.y,currenttri[tnum])
-				tnum += 1
+	if !gameover:
+		if Input.is_action_just_released("mouse_up"):
+			var save = currenttri[0]
+			currenttri[0] = currenttri[2]
+			currenttri[2] = currenttri[1]
+			currenttri[1] = save
+		if Input.is_action_just_released("mouse_down"):
+			var save = currenttri[2]
+			currenttri[2] = currenttri[0]
+			currenttri[0] = currenttri[1]
+			currenttri[1] = save
+		if Input.is_action_just_released("mouse_right"):
 			for i in 3:
 				currenttri[i] = nexttri[i]
 			piecenum += 1
 			nexttri = generate_pieces()
-			for i in 17:
-				check_for_line(i)
+			garbagelevel += 1
+			for i in garbagelevel:
+				$Board.set_cell(currentgarbage,0,3)
+				currentgarbage += 1
+				currentgarbage = currentgarbage % 6
+			var mytext2 = text.instance()
+			mytext2.position = Vector2(128,16)
+			mytext2.text = "GARBAGE LEVEL "+String(min(garbagelevel,6))+"!"
+			mytext2.special = true
+			add_child(mytext2)
+		if Input.is_action_just_released("mouse_left"):
+			if canplace:
+				var tnum = 0
+				for tile in $BoardPreview.get_used_cells():
+					if $Board.get_cell(tile.x,tile.y) != -1:
+						var mytile = fallingtile.instance()
+						mytile.position = $Board.map_to_world(tile)
+						mytile.type = $Board.get_cell(tile.x,tile.y)
+						$Board.add_child(mytile)
+					$Board.set_cell(tile.x,tile.y,currenttri[tnum])
+					tnum += 1
+				for i in 3:
+					currenttri[i] = nexttri[i]
+				piecenum += 1
+				nexttri = generate_pieces()
+				for i in 17:
+					check_for_line(i)
 func generate_pieces():
 	var array = [randi()%3,randi()%3,randi()%3]
 	if piecenum % 10 == 0:

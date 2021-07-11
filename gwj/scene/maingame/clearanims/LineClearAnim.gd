@@ -1,6 +1,6 @@
 extends Node2D
 
-
+var lineclearanim2 = preload("res://scene/maingame/clearanims/LineClearAnim2.tscn")
 var time = 0
 var type = 0
 var spritetable = [
@@ -11,7 +11,10 @@ var spritetable = [
 
 func _ready():
 	$Sprite.region_rect.position = spritetable[type]
-	
+	var myclearanim = lineclearanim2.instance()
+	myclearanim.position = position
+	myclearanim.type = type
+	get_parent().add_child(myclearanim)
 func _process(delta):
 	time += delta
 	$Sprite.scale.x = lerp(1,1.5,time*3)

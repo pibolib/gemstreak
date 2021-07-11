@@ -106,3 +106,21 @@ region_rect = Rect2( 16, 16, 16, 16 )
 __meta__ = {
 "_edit_group_": true
 }
+
+[node name="7" type="Sprite" parent="."]
+position = Vector2( 24, 24 )
+texture = ExtResource( 1 )
+region_enabled = true
+region_rect = Rect2( 16, 16, 16, 16 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="8" type="Sprite" parent="."]
+position = Vector2( 88, 8 )
+texture = ExtResource( 1 )
+region_enabled = true
+region_rect = Rect2( 80, 0, 16, 16 )
+__meta__ = {
+"_edit_group_": true
+}
