@@ -1,10 +1,21 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://bgm/nothing.ogg" type="AudioStream" id=1]
+[ext_resource path="res://bgm/yeah.ogg" type="AudioStream" id=1]
 [ext_resource path="res://scene/global/Global.gd" type="Script" id=2]
 
 [node name="Global" type="Node"]
 script = ExtResource( 2 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="Transition" type="ColorRect" parent="CanvasLayer"]
+margin_top = -200.0
+margin_right = 256.0
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="BGM" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 1 )

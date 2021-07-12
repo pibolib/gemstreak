@@ -6,6 +6,8 @@ var garbageclearanim = preload("res://scene/maingame/clearanims/GarbageClearAnim
 var specialclearanim = preload("res://scene/maingame/clearanims/specialclearanim/SpecialClearAnim.tscn")
 var text = preload("res://scene/maingame/textpopup/Text.tscn")
 var shinything = preload("res://scene/maingame/etc/ShinyThing.tscn")
+var bg01 = preload("res://scene/maingame/backgrounds/bg01/bg01.tscn")
+var bg02 = preload("res://scene/maingame/backgrounds/bg02/bg02.tscn")
 
 #game variables
 var score = 0
@@ -13,6 +15,7 @@ var dscore = 0
 var scrtick = 0
 var scoregoal = 1000
 
+var line = 0
 var streak = 0
 var streaktime = 0
 
@@ -44,15 +47,25 @@ var mposcenter = Vector2(0,0)
 var falltimer = 0.125
 
 var currentgarbage = 0
-var nextshine = 1
+var nextshine = 0.5
 
+var bgm = 0
 func _ready():
+	var bg = bg01.instance()
+	add_child(bg)
+	bgm = 1+2*(randi()%2)
 	for i in 6:
 		for j in 8:
 			$Board.set_cell(i,j+9,randi()%3)
 	currenttri = generate_pieces()
 	nexttri = generate_pieces()
 func _process(delta):
+	if score > Global.highscore:
+		Global.highscore = score
+	if gameover:
+		$UI/Lose.visible = true
+	if Global.transitiontime <= 0:
+		Global.currenttrack = bgm
 	nextshine -= delta
 	if nextshine <= 0:
 		var randpos = Vector2(randi()%6,randi()%20)
@@ -62,7 +75,7 @@ func _process(delta):
 				var myshine = shinything.instance()
 				myshine.position = $Board.map_to_world(randpos)+Vector2(11,2)
 				$Board.add_child(myshine)
-		nextshine = rand_range(0.8,1.2)
+		nextshine = rand_range(0.4,0.6)
 	if life == 0:
 		for i in 6:
 			for j in 20:
@@ -74,9 +87,6 @@ func _process(delta):
 		gameover = true
 	scrtick -= delta
 	if scrtick <= 0:
-		for i in 6:
-			if $Board.get_cell(i,-1) != -1:
-				life -= 60
 		update_board()
 		scrtick = 0.0625
 		if score-dscore > 101:
@@ -88,6 +98,7 @@ func _process(delta):
 	if colorstreak >= 5 and !colorstreakbonus:
 		score += 1000
 		life += 15
+		$Audio/ColorBonus.playing = true
 		var mytext2 = text.instance()
 		mytext2.position = Vector2(128,16)
 		mytext2.text = "CONSECUTIVE COLOR BONUS +1000"
@@ -148,7 +159,7 @@ func update_info():
 	$NextDisplay.set_cell(2,8,nexttri[0])
 	$NextDisplay.set_cell(1,9,nexttri[1])
 	$NextDisplay.set_cell(2,9,nexttri[2])
-	$UI/Score.text = String(dscore).pad_zeros(5)+"\n"+String(scoregoal).pad_zeros(5)
+	$UI/Score.text = String(dscore).pad_zeros(5)+"\n"+String(Global.highscore).pad_zeros(5)
 	if lastcolor != -1:
 		$Streak.region_rect.position = colorstreaktable[lastcolor]
 	$UI/ColorStreak.text = String(colorstreak)
@@ -156,6 +167,7 @@ func update_info():
 	$UI/Streak.text = String(streak)
 	$Streak3.offset.y = floor(60*((10-streaktime)/10))+1
 	$Streak3.region_rect.size.y = floor(60*(streaktime/10))
+	$UI/LineCount.text = String(line)
 func update_board():
 	$BoardConnections.clear()
 	for i in 6:
@@ -196,10 +208,11 @@ func check_for_line(row):
 				score += 10
 		$Audio/Clear.pitch_scale = rand_range(0.9,1.1)
 		$Audio/Clear.playing = true
+		line += 1
 		score += 100 + streak*10
 		life += (5+min(floor(streak/2),10))
 		var mytext5 = text.instance()
-		mytext5.position = Vector2(40,144)
+		mytext5.position = Vector2(55,138)
 		mytext5.text = "+"+String(5+min(floor(streak/2),10))
 		mytext5.time = 0.4
 		add_child(mytext5)
@@ -215,12 +228,6 @@ func check_for_line(row):
 			colorstreakbonus = false
 		streaktime = 10
 		garbagelevel -= 1
-		if garbagelevel > 0:
-			var mytext4 = text.instance()
-			mytext4.position = Vector2(128,16)
-			mytext4.text = "GARBAGE LEVEL DOWN!"
-			mytext4.special = true
-			add_child(mytext4)
 		var myanim = lineclearanim.instance()
 		myanim.type = color
 		myanim.position.x = 48
@@ -338,11 +345,12 @@ func process_mouse():
 				$Board.set_cell(currentgarbage,0,3)
 				currentgarbage += 1
 				currentgarbage = currentgarbage % 6
-			var mytext2 = text.instance()
-			mytext2.position = Vector2(128,16)
-			mytext2.text = "GARBAGE LEVEL "+String(min(garbagelevel,6))+"!"
-			mytext2.special = true
-			add_child(mytext2)
+			if garbagelevel > 3:
+				var mytext2 = text.instance()
+				mytext2.position = Vector2(128,16)
+				mytext2.text = "GARBAGE WARNING!!"
+				mytext2.special = true
+				add_child(mytext2)
 		if Input.is_action_just_released("mouse_left"):
 			if canplace:
 				$Audio/Place.pitch_scale = rand_range(0.9,1.1)
@@ -352,6 +360,8 @@ func process_mouse():
 					if $Board.get_cell(tile.x,tile.y) != -1:
 						var mytile = fallingtile.instance()
 						mytile.position = $Board.map_to_world(tile)
+						if tile.y == mousetilepos.y:
+							mytile.position.y -= 8
 						mytile.type = $Board.get_cell(tile.x,tile.y)
 						$Board.add_child(mytile)
 					$Board.set_cell(tile.x,tile.y,currenttri[tnum])
@@ -362,6 +372,8 @@ func process_mouse():
 				nexttri = generate_pieces()
 				for i in 17:
 					check_for_line(i)
+	elif Input.is_action_just_released("mouse_left"):
+		Global.toscene = "res://scene/menu/Title.tscn"
 func generate_pieces():
 	var array = [randi()%3,randi()%3,randi()%3]
 	if piecenum % 10 == 0:

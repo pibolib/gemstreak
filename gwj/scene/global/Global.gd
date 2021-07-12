@@ -8,8 +8,15 @@ var track = [
 	preload("res://bgm/the time machine\'s curse.ogg"),
 	preload("res://bgm/game_over.ogg")
 ]
-var currenttrack = 3
+var currenttrack = 2
+var vol = 1
 var time = 0
+var currentscene = "res://scene/menu/Title.tscn"
+var toscene = "res://scene/menu/Title.tscn"
+var transitiontime = 0
+
+var showtutorial = true
+var highscore = 2500
 
 func _ready():
 	pass
@@ -17,7 +24,21 @@ func _ready():
 func _process(delta):
 	time += delta
 	if $BGM.stream != track[currenttrack]:
-		$BGM.stream = track[currenttrack]
-		$BGM.playing = true
+		$BGM.volume_db -= 160*delta
+		if $BGM.volume_db <= -80:
+			$BGM.stream = track[currenttrack]
+			$BGM.playing = true
+	elif $BGM.volume_db < 0:
+		$BGM.volume_db = 0
 	if !$BGM.playing:
 		$BGM.playing = true
+	$CanvasLayer/Transition.rect_position.y = -200+400*transitiontime
+	if currentscene != toscene:
+		currenttrack = 0
+		transitiontime += delta
+		if transitiontime >= 0.5:
+			get_tree().change_scene(toscene)
+			currentscene = toscene
+	elif transitiontime > 0:
+		transitiontime -= delta
+		

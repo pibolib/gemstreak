@@ -1,9 +1,9 @@
 extends Node2D
 
-const G = 800
+const G = 900
 var type = 0
 var poslastframe = Vector2(0,0)
-var motion = Vector2(0,-500)
+var motion = Vector2(0,-550)
 var gravity = Vector2(0,G)
 var spritetable = [
 	Vector2(0,0),
@@ -20,7 +20,6 @@ func _ready():
 	else:
 		$Sprite.region_rect.position = spritetable[type]
 	calculate_tilepos()
-
 func _process(delta):
 	motion += gravity * delta
 	position += motion * delta
@@ -29,9 +28,9 @@ func _process(delta):
 		if get_parent().get_cell(tilepos.x,tilepos.y) == -1:
 			get_parent().set_cell(tilepos.x,tilepos.y,type)
 			get_parent().get_parent().check_for_line(tilepos.y)
-		else:
-			get_parent().set_cell(tilepos.x,tilepos.y-1,type)
-			get_parent().get_parent().check_for_line(tilepos.y-1)
+			queue_free()
+	if position.y > 200:
+		get_parent().get_parent().life = 0
 		queue_free()
 func calculate_tilepos():
 	tilepos = get_parent().world_to_map(Vector2(position.x,position.y))

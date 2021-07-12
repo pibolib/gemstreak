@@ -4,7 +4,7 @@
 [ext_resource path="res://scene/maingame/gametileset.png" type="Texture" id=2]
 [ext_resource path="res://04B_08_.TTF" type="DynamicFontData" id=3]
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=1]
 size = 8
 font_data = ExtResource( 3 )
 
@@ -20,7 +20,7 @@ region_rect = Rect2( 0, 0, 16, 16 )
 [node name="Label" type="Label" parent="."]
 margin_right = 40.0
 margin_bottom = 14.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
 __meta__ = {
 "_edit_lock_": true,
 "_edit_use_anchors_": false
