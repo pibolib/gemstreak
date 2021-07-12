@@ -5,7 +5,8 @@ var track = [
 	preload("res://bgm/nothing.ogg"),
 	preload("res://bgm/lineitup.ogg"),
 	preload("res://bgm/yeah.ogg"),
-	preload("res://bgm/the time machine\'s curse.ogg")
+	preload("res://bgm/the time machine\'s curse.ogg"),
+	preload("res://bgm/game_over.ogg")
 ]
 var currenttrack = 3
 var time = 0

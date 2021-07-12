@@ -5,6 +5,7 @@ var lineclearanim = preload("res://scene/maingame/clearanims/LineClearAnim.tscn"
 var garbageclearanim = preload("res://scene/maingame/clearanims/GarbageClearAnim.tscn")
 var specialclearanim = preload("res://scene/maingame/clearanims/specialclearanim/SpecialClearAnim.tscn")
 var text = preload("res://scene/maingame/textpopup/Text.tscn")
+var shinything = preload("res://scene/maingame/etc/ShinyThing.tscn")
 
 #game variables
 var score = 0
@@ -43,6 +44,7 @@ var mposcenter = Vector2(0,0)
 var falltimer = 0.125
 
 var currentgarbage = 0
+var nextshine = 1
 
 func _ready():
 	for i in 6:
@@ -51,6 +53,16 @@ func _ready():
 	currenttri = generate_pieces()
 	nexttri = generate_pieces()
 func _process(delta):
+	nextshine -= delta
+	if nextshine <= 0:
+		var randpos = Vector2(randi()%6,randi()%20)
+		var randcell = $Board.get_cell(randpos.x,randpos.y)
+		match randcell:
+			0,1,2:
+				var myshine = shinything.instance()
+				myshine.position = $Board.map_to_world(randpos)+Vector2(11,2)
+				$Board.add_child(myshine)
+		nextshine = rand_range(0.8,1.2)
 	if life == 0:
 		for i in 6:
 			for j in 20:
@@ -64,7 +76,7 @@ func _process(delta):
 	if scrtick <= 0:
 		for i in 6:
 			if $Board.get_cell(i,-1) != -1:
-				life -= 2
+				life -= 60
 		update_board()
 		scrtick = 0.0625
 		if score-dscore > 101:
@@ -105,10 +117,14 @@ func _process(delta):
 					myanim.position = $Board.map_to_world(Vector2(i,j)) + Vector2(8,8)
 					$Board.add_child(myanim)
 		colorstreakbonus = true
+		for i in 17:
+			check_for_line(i)
 	life -= delta
 	falltimer -= delta
 	if falltimer <= 0:
 		falltimer = 0.25
+		check_for_falling(-1)
+		check_for_falling(-2)
 		for i in 22:
 			check_for_falling(17-i)
 	time += delta
@@ -135,7 +151,7 @@ func update_info():
 	$UI/Score.text = String(dscore).pad_zeros(5)+"\n"+String(scoregoal).pad_zeros(5)
 	if lastcolor != -1:
 		$Streak.region_rect.position = colorstreaktable[lastcolor]
-	$UI/ColorStreak.text = String(colorstreak).pad_zeros(2)
+	$UI/ColorStreak.text = String(colorstreak)
 	$UI/Time.text = String(int(life/60))+":"+String(int(life)%60).pad_zeros(2)
 	$UI/Streak.text = String(streak)
 	$Streak3.offset.y = floor(60*((10-streaktime)/10))+1
@@ -181,10 +197,10 @@ func check_for_line(row):
 		$Audio/Clear.pitch_scale = rand_range(0.9,1.1)
 		$Audio/Clear.playing = true
 		score += 100 + streak*10
-		life += (5+streak)
+		life += (5+min(floor(streak/2),10))
 		var mytext5 = text.instance()
 		mytext5.position = Vector2(40,144)
-		mytext5.text = "+"+String(5+streak)
+		mytext5.text = "+"+String(5+min(floor(streak/2),10))
 		mytext5.time = 0.4
 		add_child(mytext5)
 		streak += 1
