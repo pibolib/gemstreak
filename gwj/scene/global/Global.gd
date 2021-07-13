@@ -37,7 +37,9 @@ func _process(delta):
 		currenttrack = 0
 		transitiontime += delta
 		if transitiontime >= 0.5:
-			get_tree().change_scene(toscene)
+			var status
+			status = get_tree().change_scene(toscene)
+			print(status)
 			currentscene = toscene
 	elif transitiontime > 0:
 		transitiontime -= delta
