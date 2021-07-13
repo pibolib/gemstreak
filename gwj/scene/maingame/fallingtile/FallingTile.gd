@@ -39,6 +39,14 @@ func _process(delta):
 				get_parent().set_cell(tilepos.x+1,tilepos.y,type)
 				get_parent().get_parent().check_for_line(tilepos.y)
 				queue_free()
+			elif get_parent().get_cell(tilepos.x,tilepos.y-1) == -1 and tilepos.y-1 >= 0:
+				get_parent().set_cell(tilepos.x,tilepos.y-1,type)
+				get_parent().get_parent().check_for_line(tilepos.y-1)
+				queue_free()
+			elif get_parent().get_cell(tilepos.x,tilepos.y-2) == -1 and tilepos.y-2 >= 0:
+				get_parent().set_cell(tilepos.x,tilepos.y-2,type)
+				get_parent().get_parent().check_for_line(tilepos.y-2)
+				queue_free()
 		if position.y > 200:
 			get_parent().get_parent().life = 0
 			queue_free()

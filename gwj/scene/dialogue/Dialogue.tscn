@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://04B_03_.TTF" type="DynamicFontData" id=1]
+[ext_resource path="res://scene/dialogue/Dialogue.gd" type="Script" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 8
+font_data = ExtResource( 1 )
+
+[node name="Dialogue" type="Node"]
+script = ExtResource( 2 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="BG" type="ColorRect" parent="CanvasLayer"]
+margin_right = 256.0
+margin_bottom = 199.0
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Text" type="Label" parent="CanvasLayer"]
+margin_left = 3.0
+margin_top = 2.0
+margin_right = 254.0
+margin_bottom = 21.0
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 0.635294, 1, 0.952941, 1 )
+text = "LEFT CLICK TO PROCEED. RIGHT CLICK TO SKIP."
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
