@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://scene/maingame/gametileset.png" type="Texture" id=1]
 [ext_resource path="res://scene/maingame/Tiles.tres" type="TileSet" id=2]
@@ -16,6 +16,9 @@
 [ext_resource path="res://sfx/discard.wav" type="AudioStream" id=14]
 [ext_resource path="res://sfx/colorbonus.wav" type="AudioStream" id=15]
 [ext_resource path="res://scene/maingame/Click.gd" type="Script" id=16]
+[ext_resource path="res://scene/maingame/Click2.gd" type="Script" id=17]
+[ext_resource path="res://scene/maingame/Click3.gd" type="Script" id=18]
+[ext_resource path="res://scene/maingame/Click4.gd" type="Script" id=19]
 
 [sub_resource type="DynamicFont" id=1]
 size = 8
@@ -168,11 +171,10 @@ __meta__ = {
 }
 
 [node name="Pause" type="Label" parent="UI"]
-visible = false
 margin_left = 86.0
-margin_top = 178.0
+margin_top = 74.0
 margin_right = 171.0
-margin_bottom = 192.0
+margin_bottom = 88.0
 custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 0.635294, 1, 0.952941, 1 )
 text = "-GAME PAUSED-"
@@ -248,9 +250,9 @@ __meta__ = {
 [node name="Win" type="Label" parent="UI"]
 visible = false
 margin_left = 81.0
-margin_top = 176.0
+margin_top = 3.0
 margin_right = 175.0
-margin_bottom = 195.0
+margin_bottom = 22.0
 custom_fonts/font = SubResource( 5 )
 text = "LEVEL COMPLETE!
 CLICK TO CONTINUE"
@@ -262,9 +264,9 @@ __meta__ = {
 [node name="Lose" type="Label" parent="UI"]
 visible = false
 margin_left = 81.0
-margin_top = 176.0
+margin_top = 3.0
 margin_right = 175.0
-margin_bottom = 195.0
+margin_bottom = 22.0
 custom_fonts/font = SubResource( 5 )
 text = "GAME OVER!
 CLICK TO CONTINUE"
@@ -316,6 +318,9 @@ texture = ExtResource( 5 )
 centered = false
 region_enabled = true
 region_rect = Rect2( 0, 144, 16, 16 )
+__meta__ = {
+"_edit_group_": true
+}
 
 [node name="Click" type="Area2D" parent="PauseChamp"]
 script = ExtResource( 16 )
@@ -324,5 +329,65 @@ script = ExtResource( 16 )
 position = Vector2( 8, 8 )
 shape = SubResource( 6 )
 
+[node name="RotateLeft" type="Sprite" parent="."]
+position = Vector2( 88, 176 )
+z_index = 3000
+texture = ExtResource( 5 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 96, 96, 16, 16 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Click2" type="Area2D" parent="RotateLeft"]
+script = ExtResource( 17 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RotateLeft/Click2"]
+position = Vector2( 8, 8 )
+shape = SubResource( 6 )
+
+[node name="RotateRight" type="Sprite" parent="."]
+position = Vector2( 152, 176 )
+z_index = 3000
+texture = ExtResource( 5 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 128, 96, 16, 16 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Click2" type="Area2D" parent="RotateRight"]
+script = ExtResource( 19 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RotateRight/Click2"]
+position = Vector2( 8, 8 )
+shape = SubResource( 6 )
+
+[node name="Trash" type="Sprite" parent="."]
+position = Vector2( 120, 176 )
+z_index = 3000
+texture = ExtResource( 5 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 112, 96, 16, 16 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Click3" type="Area2D" parent="Trash"]
+script = ExtResource( 18 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trash/Click3"]
+position = Vector2( 8, 8 )
+shape = SubResource( 6 )
+
 [connection signal="mouse_entered" from="PauseChamp/Click" to="PauseChamp/Click" method="_on_Click_mouse_entered"]
 [connection signal="mouse_exited" from="PauseChamp/Click" to="PauseChamp/Click" method="_on_Click_mouse_exited"]
+[connection signal="mouse_entered" from="RotateLeft/Click2" to="RotateLeft/Click2" method="_on_Click2_mouse_entered"]
+[connection signal="mouse_exited" from="RotateLeft/Click2" to="RotateLeft/Click2" method="_on_Click2_mouse_exited"]
+[connection signal="mouse_entered" from="RotateRight/Click2" to="RotateRight/Click2" method="_on_Click2_mouse_entered"]
+[connection signal="mouse_exited" from="RotateRight/Click2" to="RotateRight/Click2" method="_on_Click2_mouse_exited"]
+[connection signal="mouse_entered" from="Trash/Click3" to="Trash/Click3" method="_on_Click2_mouse_entered"]
+[connection signal="mouse_exited" from="Trash/Click3" to="Trash/Click3" method="_on_Click2_mouse_exited"]
