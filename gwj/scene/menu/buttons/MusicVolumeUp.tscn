@@ -1,0 +1,62 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scene/menu/buttons/MusicVolumeUp.gd" type="Script" id=1]
+[ext_resource path="res://scene/maingame/uibits.png" type="Texture" id=2]
+[ext_resource path="res://scene/menu/textfont.tres" type="DynamicFont" id=3]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 8, 8 )
+
+[node name="MusicVolumeUp" type="NinePatchRect"]
+margin_left = 72.0
+margin_top = 160.0
+margin_right = 88.0
+margin_bottom = 176.0
+texture = ExtResource( 2 )
+region_rect = Rect2( 64, 128, 16, 16 )
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+visible = false
+margin_right = 56.0
+margin_bottom = 16.0
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color = Color( 0.635294, 1, 0.952941, 1 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "Music: 100%"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Description" type="Label" parent="."]
+visible = false
+margin_left = 86.0
+margin_right = 156.0
+margin_bottom = 16.0
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color = Color( 0.635294, 1, 0.952941, 1 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 8, 8 )
+shape = SubResource( 1 )
+
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_Area2D_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_Area2D_mouse_exited"]

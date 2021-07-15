@@ -10,6 +10,31 @@ var bg01 = preload("res://scene/maingame/backgrounds/bg01/bg01.tscn")
 var bg02 = preload("res://scene/maingame/backgrounds/bg02/bg02.tscn")
 
 var tutorial = false
+var levelname = [
+	"TUTORIAL",
+	"LEVEL 1",
+	"LEVEL 2",
+	"LEVEL 3",
+	"LEVEL 4",
+	"LEVEL 5",
+	"LEVEL 6",
+	"LEVEL 7",
+	"LEVEL 8",
+	"LEVEL 9",
+	"LEVEL 10",
+	"LEVEL 11",
+	"LEVEL 12",
+	"LEVEL 13",
+	"LEVEL 14",
+	"LEVEL 15",
+	"LEVEL 16",
+	"LEVEL 17",
+	"LEVEL 18",
+	"LEVEL 19",
+	"LEVEL 20",
+	"ENDLESS"
+]
+var levelclear = false
 var tutorialtext = [
 	"Welcome to GemStreak.",
 	"In this game, your goal is to line up gems of similar colors into horizontal rows. This causes them to disappear.",
@@ -49,6 +74,7 @@ var topstreak = 0
 var lastcolor = -1
 var colorstreak = 0
 var colorstreakbonus = false
+var colorbonus = 0
 var colorstreaktable = [
 	Vector2(208,64),
 	Vector2(235,64),
@@ -88,9 +114,17 @@ var bgm = 0
 func _ready():
 	var bg = bg01.instance()
 	add_child(bg)
-	for i in 6:
-		for j in 8:
-			$Board.set_cell(i,j+9,randi()%3)
+	for i in 8:
+		var myline = [-1,-1,-1,-1,-1,-1]
+		for j in 6:
+			myline[j] = randi()%3
+			$Board.set_cell(j,i+9,myline[j])
+		var allsame = true
+		for j in 5:
+			if myline[j] != myline[j+1]:
+				allsame = false
+		if allsame:
+			$Board.set_cell(5,i,($Board.get_cell(5,i)+1)%3)
 	match Global.level:
 		0:
 			bgm = 1
@@ -271,6 +305,10 @@ func _process(delta):
 				pause = true
 	$PauseChamp.region_rect.position = pausetable[int(pause)]
 	if score >= scoregoal:
+		if !levelclear:
+			$Audio/LevelClear.playing = true
+			levelclear = true
+			bgm = 0
 		for child in $Board.get_children():
 			child.queue_free()
 		gameover = true
@@ -289,7 +327,13 @@ func _process(delta):
 				$BoardConnections.modulate.a -= delta
 				$BoardPreview.modulate.a -= delta
 			else:
-				$UI/Statistics.text = "-STATISTICS-\n\n-SCORE-\n"+String(score)+"\n\n-MAX STREAK-\n"+String(topstreak)+"\n\n-GARBAGE CLEARED-\n"+String(garbagecleared)
+				$UI/Statistics.text = "-"+levelname[Global.level]+" STATISTICS-\n\n-SCORE-\n"+String(score)
+				if Global.level == 21 and score == Global.highscore:
+					$UI/Statistics.text += " (NEW BEST!)"
+				$UI/Statistics.text += "\n\n-MAX STREAK-\n"+String(topstreak)
+				if topstreak == line and topstreak > 0:
+					$UI/Statistics.text += " (PERFECT!)"
+				$UI/Statistics.text += "\n\n-GARBAGE CLEARED-\n"+String(garbagecleared)+"\n\n-COLOR BONUSES-\n"+String(colorbonus)
 				$UI/Statistics.visible = true
 				$UI/Statistics.percent_visible += delta
 		if Global.transitiontime <= 0:
@@ -327,6 +371,7 @@ func _process(delta):
 		if colorstreak >= 5 and !colorstreakbonus:
 			score += 1000
 			life += 10
+			colorbonus += 1
 			$Audio/ColorBonus.playing = true
 			var mytext2 = text.instance()
 			mytext2.position = Vector2(128,16)
@@ -373,6 +418,15 @@ func _process(delta):
 				check_for_line(17-i)
 		time += delta
 		if !gameover:
+			if life < 15:
+				if $Audio/Warning.playing == false:
+					$Audio/Warning.playing = true
+				if int(time) % 2 == 0:
+					$UI/LowTime.visible = false
+				else:
+					$UI/LowTime.visible = true
+			else:
+				$UI/LowTime.visible = false
 			streaktime = clamp(streaktime,0,max(5,10-0.05*streak)*streakmulti)
 			if streaktime > 0:
 				streaktime -= delta
@@ -389,7 +443,6 @@ func update_info():
 	$NextDisplay.set_cell(2,4,currenttri[0])
 	$NextDisplay.set_cell(1,5,currenttri[1])
 	$NextDisplay.set_cell(2,5,currenttri[2])
-	
 	$NextDisplay.set_cell(2,8,nexttri[0])
 	$NextDisplay.set_cell(1,9,nexttri[1])
 	$NextDisplay.set_cell(2,9,nexttri[2])

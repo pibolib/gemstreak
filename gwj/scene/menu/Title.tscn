@@ -68,7 +68,7 @@ margin_bottom = 208.0
 custom_fonts/font = ExtResource( 6 )
 custom_colors/font_color = Color( 0.635294, 1, 0.952941, 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-text = "Development"
+text = "Playtester's Build No. 02"
 __meta__ = {
 "_edit_use_anchors_": false
 }

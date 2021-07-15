@@ -16,6 +16,8 @@ var currentscene = "res://scene/menu/Title.tscn"
 var toscene = "res://scene/menu/Title.tscn"
 var transitiontime = 0
 var hasseeninstruction = false
+var bgmvol = 10
+var sfxvol = 10
 
 var highscore = 2500
 var highestlevel = 0
@@ -25,6 +27,16 @@ func _ready():
 	load_save()
 
 func _process(delta):
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("BGM"),lerp(-40,0,float(bgmvol)/10))
+	if bgmvol == 0:
+		AudioServer.set_bus_mute(AudioServer.get_bus_index("BGM"),true)
+	else:
+		AudioServer.set_bus_mute(AudioServer.get_bus_index("BGM"),false)
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("SFX"),lerp(-40,0,float(sfxvol)/10))
+	if sfxvol == 0:
+		AudioServer.set_bus_mute(AudioServer.get_bus_index("SFX"),true)
+	else:
+		AudioServer.set_bus_mute(AudioServer.get_bus_index("SFX"),false)
 	time += delta
 	if $BGM.stream != track[currenttrack]:
 		$BGM.volume_db -= 160*delta
@@ -54,11 +66,15 @@ func load_save():
 		file.store_line(String(int(highscore)))
 		file.store_line(String(hasseeninstruction))
 		file.store_line(String(highestlevel))
+		file.store_line(String(bgmvol))
+		file.store_line(String(sfxvol))
 		file.close()
 	file.open("user://save.pib", File.READ)
 	highscore = int(file.get_line())
 	hasseeninstruction = bool(file.get_line())
 	highestlevel = int(file.get_line())
+	bgmvol = int(file.get_line())
+	sfxvol = int(file.get_line())
 	file.close()
 func update_save():
 	var file = File.new()
@@ -66,5 +82,7 @@ func update_save():
 	file.store_line(String(int(highscore)))
 	file.store_line(String(hasseeninstruction))
 	file.store_line(String(highestlevel))
+	file.store_line(String(bgmvol))
+	file.store_line(String(sfxvol))
 	file.close()
 

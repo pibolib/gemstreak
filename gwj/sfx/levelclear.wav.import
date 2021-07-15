@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/levelclear.wav-85a06db11aca7fb36cd57a8f75c9ac2c.sample"
+
+[deps]
+
+source_file="res://sfx/levelclear.wav"
+dest_files=[ "res://.import/levelclear.wav-85a06db11aca7fb36cd57a8f75c9ac2c.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

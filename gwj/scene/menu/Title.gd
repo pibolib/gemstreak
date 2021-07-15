@@ -13,8 +13,13 @@ var buttons = [
 	preload("res://scene/menu/buttons/PlayPart4.tscn"),
 	preload("res://scene/menu/buttons/BackToPlay.tscn"),
 	preload("res://scene/menu/buttons/PlayLevel.tscn"),
-	preload("res://scene/menu/buttons/BackToStory.tscn")
-	
+	preload("res://scene/menu/buttons/BackToStory.tscn"),
+	preload("res://scene/menu/buttons/MusicVolumeDisplay.tscn"),
+	preload("res://scene/menu/buttons/MusicVolumeUp.tscn"),
+	preload("res://scene/menu/buttons/MusicVolumeDown.tscn"),
+	preload("res://scene/menu/buttons/AudioVolumeDisplay.tscn"),
+	preload("res://scene/menu/buttons/AudioVolumeUp.tscn"),
+	preload("res://scene/menu/buttons/AudioVolumeDown.tscn")
 ]
 var time = 0
 var pos = 0
@@ -35,7 +40,7 @@ func load_menu(menu):
 		1:
 			list = [buttons[2],buttons[3],buttons[4],buttons[5]]
 		2: 
-			pass
+			list = [buttons[3],buttons[13],buttons[14],buttons[15],buttons[16],buttons[17],buttons[18]]
 		3:
 			list = [buttons[6],buttons[7],buttons[8],buttons[9],buttons[10]]
 	for i in list.size():
