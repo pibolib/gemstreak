@@ -9,6 +9,31 @@ var shinything = preload("res://scene/maingame/etc/ShinyThing.tscn")
 var bg01 = preload("res://scene/maingame/backgrounds/bg01/bg01.tscn")
 var bg02 = preload("res://scene/maingame/backgrounds/bg02/bg02.tscn")
 
+var tutorial = false
+var tutorialtext = [
+	"Welcome to GemStreak.",
+	"In this game, your goal is to line up gems of similar colors into horizontal rows. This causes them to disappear.",
+	"This game is entirely controlled by the mouse. Move your cursor around the playfield, and the preview trio will follow.",
+	"When you press the left mouse button, the trio of gems that are at the top of the NEXT queue will be placed into the spot the that preview specifies.",
+	"If there are gems already there, they will be launched to the top of the screen.",
+	"You can rotate the current trio with the rotate buttons at the bottom, or with the mouse wheel.",
+	"If you cannot use the current trio anywhere, you can discard it using the trash can button at the bottom of the screen, or with the right mouse button.",
+	"Be careful doing this too often, as discarding many trios will cause garbage gems to fill up the playfield, which can only be cleared by clearing a line nearby.",
+	"When you clear a line, a streak timer starts in the top right. If you build up a streak, you will gain more points from each additional line cleared.",
+	"Also, if you clear lines of the same color consecutively, you can gain a bonus for that too. ",
+	"You can see the current color that you are on in the large gem next to your score.",
+	"You can receive a special bonus when you reach a consecutive color streak of 5.",
+	"The game is over if you run out of time, or if a gem is unable to immediately lock into place inside of the playfield.",
+	"On the left, you can see your remaining time. You can gain time back from clearing lines. Having a higher streak gives you more time per line cleared.",
+	"To complete each level, you must achieve the score goal listed under your current score.",
+	"Good luck, and most importantly, have fun.",
+	"When you wish to exit this mode, you can pause the game and then press the EXIT button that shows up when the game is paused.",
+	"When you wish to exit this mode, you can pause the game and then press the EXIT button that shows up when the game is paused.",
+	""
+]
+var currenttutorial = 0
+var tutorialtime = 0
+
 #game variables
 var score = 0
 var dscore = 0
@@ -18,6 +43,7 @@ var scoregoal = 1000
 var line = 0
 var streak = 0
 var streaktime = 0
+var streakmulti = 1
 var topstreak = 0
 
 var lastcolor = -1
@@ -46,6 +72,8 @@ var time = 0
 var test = false
 
 var life = 120
+var mlife = 180
+var lifemulti = 1
 var gameover = false
 
 var mousetilepos = Vector2(0,0)
@@ -60,13 +88,181 @@ var bgm = 0
 func _ready():
 	var bg = bg01.instance()
 	add_child(bg)
-	bgm = 1+2*(randi()%2)
 	for i in 6:
 		for j in 8:
 			$Board.set_cell(i,j+9,randi()%3)
+	match Global.level:
+		0:
+			bgm = 1
+			scoregoal = 100000
+			tutorial = true
+			life = 600
+			mlife = 600
+		1:
+			bgm = 1
+			scoregoal = 1000
+			life = 180
+			mlife = 600
+			lifemulti = 2
+			streakmulti = 1
+		2:
+			bgm = 1
+			scoregoal = 1500
+			life = 150
+			mlife = 240
+			lifemulti = 1
+			streakmulti = 1
+		3:
+			bgm = 1
+			scoregoal = 2500
+			life = 120
+			mlife = 180
+			lifemulti = 1
+			streakmulti = 1
+		4:
+			bgm = 1
+			scoregoal = 3000
+			life = 120
+			mlife = 180
+			lifemulti = 1
+			streakmulti = 1
+		5:
+			bgm = 3
+			scoregoal = 3000
+			life = 300
+			mlife = 300
+			lifemulti = 0
+			streakmulti = 1
+		6:
+			bgm = 3
+			scoregoal = 4000
+			life = 300
+			mlife = 300
+			lifemulti = 0
+			streakmulti = 0.9
+		7:
+			bgm = 3
+			scoregoal = 4500
+			life = 300
+			mlife = 300
+			lifemulti = 0
+			streakmulti = 0.8
+		8:
+			bgm = 3
+			scoregoal = 5000
+			life = 330
+			mlife = 330
+			lifemulti = 0
+			streakmulti = 0.7
+		9:
+			bgm = 3
+			scoregoal = 6000
+			life = 330
+			mlife = 330
+			lifemulti = 0
+			streakmulti = 0.6
+		10:
+			bgm = 5
+			scoregoal = 2000
+			life = 60
+			mlife = 60
+			lifemulti = 0.5
+			streakmulti = 1
+		11:
+			bgm = 5
+			scoregoal = 2500
+			life = 60
+			mlife = 60
+			lifemulti = 0.5
+			streakmulti = 1
+		12:
+			bgm = 5
+			scoregoal = 4000
+			life = 45
+			mlife = 75
+			lifemulti = 0.6
+			streakmulti = 1
+		13:
+			bgm = 5
+			scoregoal = 6000
+			life = 45
+			mlife = 90
+			lifemulti = 0.6
+			streakmulti = 1
+		14:
+			bgm = 5
+			scoregoal = 8000
+			life = 30
+			mlife = 90
+			lifemulti = 0.7
+			streakmulti = 1
+		15:
+			bgm = 5
+			scoregoal = 10000
+			life = 120
+			mlife = 180
+			lifemulti = 1
+			streakmulti = 0.3
+		16:
+			bgm = 5
+			scoregoal = 12500
+			life = 30
+			mlife = 60
+			lifemulti = 1.2
+			streakmulti = 0.4
+		17:
+			bgm = 5
+			scoregoal = 15000
+			life = 600
+			mlife = 600
+			lifemulti = 0
+			streakmulti = 0.5
+		18:
+			bgm = 5
+			scoregoal = 20000
+			life = 600
+			mlife = 600
+			lifemulti = 0
+			streakmulti = 1
+		19:
+			bgm = 5
+			scoregoal = 25000
+			life = 30
+			mlife = 120
+			lifemulti = 1
+			streakmulti = 0.7
+		20:
+			bgm = 5
+			scoregoal = 30000
+			life = 120
+			mlife = 600
+			lifemulti = 0.5
+			streakmulti = 0.5
+		21:
+			bgm = 1
+			scoregoal = 9999999
+			life = 120
+			mlife = 180
+			lifemulti = 1
+			streakmulti = 1
 	currenttri = generate_pieces()
 	nexttri = generate_pieces()
 func _process(delta):
+	if Global.level == 21 and life > 0:
+		if line < 100:
+			bgm = 1
+		elif line < 200:
+			bgm = 3
+		else:
+			bgm = 5
+	if !pause and tutorial:
+		if tutorial:
+			$UI/Tutorial.text = tutorialtext[currenttutorial]
+			tutorialtime += delta
+			if tutorialtime >= 10:
+				tutorialtime = 0
+				if currenttutorial < tutorialtext.size()-1:
+					currenttutorial += 1
 	for area in $PauseChamp/Click.get_overlapping_areas():
 		if Input.is_action_just_pressed("mb_left"):
 			if pause:
@@ -74,13 +270,23 @@ func _process(delta):
 			else:
 				pause = true
 	$PauseChamp.region_rect.position = pausetable[int(pause)]
-	if score > Global.highscore:
+	if score >= scoregoal:
+		for child in $Board.get_children():
+			child.queue_free()
+		gameover = true
+	if score > Global.highscore and Global.level == 21:
 		Global.highscore = score
+	if Global.level == 21:
+		mlife = max(180-floor(line/10)*5,30)
 	if !pause:
 		if gameover:
-			$UI/Lose.visible = true
+			if score >= scoregoal:
+				$UI/Win.visible = true
+			else:
+				$UI/Lose.visible = true
 			if $Board.modulate.a > 0:
 				$Board.modulate.a -= delta
+				$BoardConnections.modulate.a -= delta
 				$BoardPreview.modulate.a -= delta
 			else:
 				$UI/Statistics.text = "-STATISTICS-\n\n-SCORE-\n"+String(score)+"\n\n-MAX STREAK-\n"+String(topstreak)+"\n\n-GARBAGE CLEARED-\n"+String(garbagecleared)
@@ -99,6 +305,7 @@ func _process(delta):
 					$Board.add_child(myshine)
 			nextshine = rand_range(0.4,0.6)
 		if life == 0:
+			Global.currenttrack = 4
 			for i in 6:
 				for j in 20:
 					var tile = $Board.get_cell(i,j-2)
@@ -153,8 +360,10 @@ func _process(delta):
 			colorstreakbonus = true
 			for i in 17:
 				check_for_line(i)
-		life -= delta
-		falltimer -= delta
+		if !gameover:
+			if !tutorial:
+				life -= delta
+			falltimer -= delta
 		if falltimer <= 0:
 			falltimer = 0.25
 			check_for_falling(-1)
@@ -164,14 +373,14 @@ func _process(delta):
 				check_for_line(17-i)
 		time += delta
 		if !gameover:
-			streaktime = clamp(streaktime,0,max(5,10-0.05*streak))
+			streaktime = clamp(streaktime,0,max(5,10-0.05*streak)*streakmulti)
 			if streaktime > 0:
 				streaktime -= delta
 			else:
 				streak = 0
 		streaktime = clamp(streaktime,0,10)
 		garbagelevel = clamp(garbagelevel,0,6)
-		life = clamp(life,0,180)
+		life = clamp(life,0,mlife)
 		process_mouse()
 	update_info()
 
@@ -184,14 +393,17 @@ func update_info():
 	$NextDisplay.set_cell(2,8,nexttri[0])
 	$NextDisplay.set_cell(1,9,nexttri[1])
 	$NextDisplay.set_cell(2,9,nexttri[2])
-	$UI/Score.text = String(dscore).pad_zeros(5)+"\n"+String(Global.highscore).pad_zeros(5)
+	if Global.level != 21:
+		$UI/Score.text = String(dscore).pad_zeros(5)+"\n"+String(scoregoal).pad_zeros(5)
+	else:
+		$UI/Score.text = String(dscore).pad_zeros(5)+"\n"+String(Global.highscore).pad_zeros(5)
 	if lastcolor != -1:
 		$Streak.region_rect.position = colorstreaktable[lastcolor]
 	$UI/ColorStreak.text = String(colorstreak)
 	$UI/Time.text = String(int(life/60))+":"+String(int(life)%60).pad_zeros(2)
 	$UI/Streak.text = String(streak)
-	$Streak3.offset.y = floor(60*((10-clamp(streaktime,0,max(5,10-0.05*streak)))/10))+1
-	$Streak3.region_rect.size.y = floor(60*(clamp(streaktime,0,max(5,10-0.05*streak))/10))
+	$Streak3.offset.y = floor(60*((10-streaktime)/10))+1
+	$Streak3.region_rect.size.y = floor(60*(streaktime)/10)
 	$UI/LineCount.text = String(line)
 	$NextDisplay.visible = !pause
 	$Board.visible = !pause
@@ -242,10 +454,10 @@ func check_for_line(row):
 		$Audio/Clear.playing = true
 		line += 1
 		score += 100 + streak*10
-		life += (5+min(floor(streak/2),10))
+		life += floor((5+min(floor(streak/2),10))*lifemulti)
 		var mytext5 = text.instance()
 		mytext5.position = Vector2(55,138)
-		mytext5.text = "+"+String(5+min(floor(streak/2),10))
+		mytext5.text = "+"+String(floor((5+min(floor(streak/2),10))*lifemulti))
 		mytext5.time = 0.4
 		add_child(mytext5)
 		streak += 1
@@ -265,14 +477,14 @@ func check_for_line(row):
 		var myanim = lineclearanim.instance()
 		myanim.type = color
 		myanim.position.x = 48
-		if row%2 == 1:
+		if int(row)%2 == 1:
 			myanim.position.x += 8
 		myanim.position.y = 8*row+8
 		$Board.add_child(myanim)
 		var mytext = text.instance()
 		mytext.text = "+100"
 		mytext.position.x = 48
-		if row%2 == 1:
+		if int(row)%2 == 1:
 			mytext.position.x += 8
 		mytext.position.y = 8*row+8
 		$Board.add_child(mytext)
@@ -280,7 +492,7 @@ func check_for_line(row):
 			var mytext2 = text.instance()
 			mytext2.text = "STREAK +"+String(10*(streak-1))
 			mytext2.position.x = 48
-			if row%2 == 1:
+			if int(row)%2 == 1:
 				mytext2.position.x += 8
 			mytext2.position.y = 8*row+16
 			$Board.add_child(mytext2)
@@ -288,7 +500,7 @@ func check_for_line(row):
 			var mytext3 = text.instance()
 			mytext3.text = "COLOR +"+String(25*(colorstreak))
 			mytext3.position.x = 48
-			if row%2 == 1:
+			if int(row)%2 == 1:
 				mytext3.position.x += 8
 			mytext3.position.y = 8*row+24
 			$Board.add_child(mytext3)
@@ -407,7 +619,11 @@ func process_mouse():
 				for i in 17:
 					check_for_line(i)
 	elif Input.is_action_just_released("mouse_left"):
+		if score >= scoregoal:
+			if Global.level != 21 and Global.level > Global.highestlevel and !tutorial:
+				Global.highestlevel = Global.level
 		Global.toscene = "res://scene/menu/Title.tscn"
+		Global.update_save()
 func generate_pieces():
 	var array = [randi()%3,randi()%3,randi()%3]
 	if piecenum % 10 == 0:
