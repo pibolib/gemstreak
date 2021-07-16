@@ -8,6 +8,7 @@ var text = preload("res://scene/maingame/textpopup/Text.tscn")
 var shinything = preload("res://scene/maingame/etc/ShinyThing.tscn")
 var bg01 = preload("res://scene/maingame/backgrounds/bg01/bg01.tscn")
 var bg02 = preload("res://scene/maingame/backgrounds/bg02/bg02.tscn")
+var bgtype = 0
 
 var tutorial = false
 var levelname = [
@@ -112,8 +113,6 @@ var nextshine = 0.5
 
 var bgm = 0
 func _ready():
-	var bg = bg01.instance()
-	add_child(bg)
 	for i in 8:
 		var myline = [-1,-1,-1,-1,-1,-1]
 		for j in 6:
@@ -148,19 +147,20 @@ func _ready():
 			streakmulti = 1
 		3:
 			bgm = 1
-			scoregoal = 2500
-			life = 120
+			scoregoal = 2000
+			life = 150
 			mlife = 180
 			lifemulti = 1
 			streakmulti = 1
 		4:
 			bgm = 1
-			scoregoal = 3000
-			life = 120
+			scoregoal = 2500
+			life = 150
 			mlife = 180
 			lifemulti = 1
 			streakmulti = 1
 		5:
+			bgtype = 1
 			bgm = 3
 			scoregoal = 3000
 			life = 300
@@ -168,6 +168,7 @@ func _ready():
 			lifemulti = 0
 			streakmulti = 1
 		6:
+			bgtype = 1
 			bgm = 3
 			scoregoal = 4000
 			life = 300
@@ -175,6 +176,7 @@ func _ready():
 			lifemulti = 0
 			streakmulti = 0.9
 		7:
+			bgtype = 1
 			bgm = 3
 			scoregoal = 4500
 			life = 300
@@ -182,6 +184,7 @@ func _ready():
 			lifemulti = 0
 			streakmulti = 0.8
 		8:
+			bgtype = 1
 			bgm = 3
 			scoregoal = 5000
 			life = 330
@@ -189,6 +192,7 @@ func _ready():
 			lifemulti = 0
 			streakmulti = 0.7
 		9:
+			bgtype = 1
 			bgm = 3
 			scoregoal = 6000
 			life = 330
@@ -196,6 +200,7 @@ func _ready():
 			lifemulti = 0
 			streakmulti = 0.6
 		10:
+			bgtype = 2
 			bgm = 5
 			scoregoal = 2000
 			life = 60
@@ -203,6 +208,7 @@ func _ready():
 			lifemulti = 0.5
 			streakmulti = 1
 		11:
+			bgtype = 2
 			bgm = 5
 			scoregoal = 2500
 			life = 60
@@ -210,6 +216,7 @@ func _ready():
 			lifemulti = 0.5
 			streakmulti = 1
 		12:
+			bgtype = 2
 			bgm = 5
 			scoregoal = 4000
 			life = 45
@@ -217,6 +224,7 @@ func _ready():
 			lifemulti = 0.6
 			streakmulti = 1
 		13:
+			bgtype = 2
 			bgm = 5
 			scoregoal = 6000
 			life = 45
@@ -224,6 +232,7 @@ func _ready():
 			lifemulti = 0.6
 			streakmulti = 1
 		14:
+			bgtype = 2
 			bgm = 5
 			scoregoal = 8000
 			life = 30
@@ -231,54 +240,64 @@ func _ready():
 			lifemulti = 0.7
 			streakmulti = 1
 		15:
-			bgm = 5
+			bgtype = 3
+			bgm = 7
 			scoregoal = 10000
 			life = 120
 			mlife = 180
 			lifemulti = 1
 			streakmulti = 0.3
 		16:
-			bgm = 5
+			bgtype = 3
+			bgm = 7
 			scoregoal = 12500
 			life = 30
 			mlife = 60
 			lifemulti = 1.2
 			streakmulti = 0.4
 		17:
-			bgm = 5
+			bgtype = 3
+			bgm = 7
 			scoregoal = 15000
 			life = 600
 			mlife = 600
 			lifemulti = 0
 			streakmulti = 0.5
 		18:
-			bgm = 5
+			bgtype = 3
+			bgm = 7
 			scoregoal = 20000
 			life = 600
 			mlife = 600
 			lifemulti = 0
 			streakmulti = 1
 		19:
-			bgm = 5
+			bgtype = 3
+			bgm = 7
 			scoregoal = 25000
 			life = 30
 			mlife = 120
 			lifemulti = 1
 			streakmulti = 0.7
 		20:
-			bgm = 5
+			bgtype = 3
+			bgm = 7
 			scoregoal = 30000
 			life = 120
 			mlife = 600
 			lifemulti = 0.5
 			streakmulti = 0.5
 		21:
+			bgtype = 4
 			bgm = 1
 			scoregoal = 9999999
 			life = 120
 			mlife = 180
 			lifemulti = 1
 			streakmulti = 1
+	var bg = bg01.instance()
+	bg.type = bgtype
+	add_child(bg)
 	currenttri = generate_pieces()
 	nexttri = generate_pieces()
 func _process(delta):
@@ -287,8 +306,10 @@ func _process(delta):
 			bgm = 1
 		elif line < 200:
 			bgm = 3
-		else:
+		elif line < 300:
 			bgm = 5
+		else:
+			bgm = 7
 	if !pause and tutorial:
 		if tutorial:
 			$UI/Tutorial.text = tutorialtext[currenttutorial]
@@ -331,7 +352,7 @@ func _process(delta):
 				if Global.level == 21 and score == Global.highscore:
 					$UI/Statistics.text += " (NEW BEST!)"
 				$UI/Statistics.text += "\n\n-MAX STREAK-\n"+String(topstreak)
-				if topstreak == line and topstreak > 0:
+				if topstreak == line and topstreak > 0 and streaktime > 0:
 					$UI/Statistics.text += " (PERFECT!)"
 				$UI/Statistics.text += "\n\n-GARBAGE CLEARED-\n"+String(garbagecleared)+"\n\n-COLOR BONUSES-\n"+String(colorbonus)
 				$UI/Statistics.visible = true
@@ -676,6 +697,7 @@ func process_mouse():
 			if Global.level != 21 and Global.level > Global.highestlevel and !tutorial:
 				Global.highestlevel = Global.level
 		Global.toscene = "res://scene/menu/Title.tscn"
+		Global.preloadmenu = 1
 		Global.update_save()
 func generate_pieces():
 	var array = [randi()%3,randi()%3,randi()%3]

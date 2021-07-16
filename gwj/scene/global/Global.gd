@@ -7,6 +7,8 @@ var track = [
 	preload("res://bgm/yeah.ogg"),
 	preload("res://bgm/the time machine\'s curse.ogg"),
 	preload("res://bgm/game_over.ogg"),
+	preload("res://bgm/fighting the flow.ogg"),
+	preload("res://bgm/End_Of_Game_and_Creds.ogg"),
 	preload("res://bgm/use your time wisely.ogg")
 ]
 var currenttrack = 2
@@ -22,6 +24,7 @@ var sfxvol = 10
 var highscore = 2500
 var highestlevel = 0
 var level = 18
+var preloadmenu = 0
 
 func _ready():
 	load_save()

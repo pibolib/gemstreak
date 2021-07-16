@@ -8,6 +8,7 @@ func _process(delta):
 	get_parent().visible = get_owner().pause
 	if canrotate and Input.is_action_just_released("mouse_left"):
 		Global.toscene = "res://scene/menu/Title.tscn"
+		Global.preloadmenu = 1
 	if canrotate and Input.is_action_pressed("mouse_left"):
 		get_parent().region_rect.position = Vector2(64,112)
 	else:

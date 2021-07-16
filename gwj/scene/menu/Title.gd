@@ -19,30 +19,49 @@ var buttons = [
 	preload("res://scene/menu/buttons/MusicVolumeDown.tscn"),
 	preload("res://scene/menu/buttons/AudioVolumeDisplay.tscn"),
 	preload("res://scene/menu/buttons/AudioVolumeUp.tscn"),
-	preload("res://scene/menu/buttons/AudioVolumeDown.tscn")
+	preload("res://scene/menu/buttons/AudioVolumeDown.tscn"),
+	preload("res://scene/menu/buttons/AboutButton.tscn")
 ]
 var time = 0
 var pos = 0
+var currentmenu = 0
 
 func _ready():
 	Global.currenttrack = 2
-
+	load_menu(Global.preloadmenu)
+	Global.preloadmenu = 0
 func _process(delta):
 	time += delta
 
 func load_menu(menu):
+	currentmenu = menu
 	for child in $UI.get_children():
 		child.queue_free()
 	var list = []
 	match menu:
 		0:
-			list = [buttons[0],buttons[1]]
+			$bg01.change_base(0)
+			Global.currenttrack = 2
+			list = [buttons[0],buttons[1],buttons[19]]
 		1:
+			$bg01.change_base(0)
+			Global.currenttrack = 2
 			list = [buttons[2],buttons[3],buttons[4],buttons[5]]
 		2: 
+			$bg01.change_base(0)
+			Global.currenttrack = 2
 			list = [buttons[3],buttons[13],buttons[14],buttons[15],buttons[16],buttons[17],buttons[18]]
 		3:
+			$bg01.change_base(0)
+			Global.currenttrack = 2
 			list = [buttons[6],buttons[7],buttons[8],buttons[9],buttons[10]]
+		4:
+			$bg01.change_base(0)
+			Global.currenttrack = 2
+			if Global.highestlevel == 20:
+				$bg01.change_base(4)
+				Global.currenttrack = 6
+			list = [buttons[3]]
 	for i in list.size():
 		var button = list[i].instance()
 		$UI.add_child(button)
@@ -52,6 +71,7 @@ func load_story_menu(menu):
 		child.queue_free()
 	match menu:
 		0:
+			$bg01.change_base(0)
 			var button = buttons[12].instance()
 			button.rect_position = Vector2(16,136-24)
 			$UI.add_child(button)
@@ -60,6 +80,7 @@ func load_story_menu(menu):
 			add_story_button(3,Vector2(16,160))
 			add_story_button(4,Vector2(96,160))
 		1:
+			$bg01.change_base(1)
 			var button = buttons[12].instance()
 			button.rect_position = Vector2(16,136-24)
 			$UI.add_child(button)
@@ -69,6 +90,7 @@ func load_story_menu(menu):
 			add_story_button(8,Vector2(16,160))
 			add_story_button(9,Vector2(96,160))
 		2:
+			$bg01.change_base(2)
 			var button = buttons[12].instance()
 			button.rect_position = Vector2(16,136-24)
 			$UI.add_child(button)
@@ -78,6 +100,7 @@ func load_story_menu(menu):
 			add_story_button(13,Vector2(16,160))
 			add_story_button(14,Vector2(96,160))
 		3:
+			$bg01.change_base(3)
 			var button = buttons[12].instance()
 			button.rect_position = Vector2(16,136-48)
 			$UI.add_child(button)

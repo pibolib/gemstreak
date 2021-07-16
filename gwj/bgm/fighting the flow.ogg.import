@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/fighting the flow.ogg-c1b8a177c8f9d7066c53169960b46bed.oggstr"
+
+[deps]
+
+source_file="res://bgm/fighting the flow.ogg"
+dest_files=[ "res://.import/fighting the flow.ogg-c1b8a177c8f9d7066c53169960b46bed.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=17.82

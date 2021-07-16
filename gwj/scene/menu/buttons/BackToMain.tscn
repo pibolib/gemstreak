@@ -22,7 +22,6 @@ axis_stretch_horizontal = 2
 axis_stretch_vertical = 2
 script = ExtResource( 1 )
 __meta__ = {
-"_edit_group_": true,
 "_edit_use_anchors_": false
 }
 
@@ -48,6 +47,27 @@ custom_colors/font_color = Color( 0.635294, 1, 0.952941, 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 text = "Return to the main menu."
 valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Credits" type="Label" parent="."]
+visible = false
+margin_top = -127.0
+margin_right = 226.0
+margin_bottom = -31.0
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color = Color( 0.635294, 1, 0.952941, 1 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "CREATED FOR GODOT WILD JAM #35: LOST TECH
+WILDCARDS USED: TRADEOFF, UNRELIABLE NARRATOR
+CREDITS:
+@pibolib: PROGRAMMING, DESIGN, ART, INGAME BGM/SFX
+@zyxflames: WRITING
+@Biinoo2: MENU/OTHER BGM
+
+MORE INFO ON THE ITCH PAGE.
+(C) 2021"
 __meta__ = {
 "_edit_use_anchors_": false
 }
