@@ -12,7 +12,6 @@ font_data = ExtResource( 1 )
 script = ExtResource( 2 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-layer = 3
 
 [node name="BG" type="ColorRect" parent="CanvasLayer"]
 margin_right = 256.0

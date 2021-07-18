@@ -295,6 +295,7 @@ func _ready():
 			mlife = 180
 			lifemulti = 1
 			streakmulti = 1
+	scoregoal = 1
 	var bg = bg01.instance()
 	bg.type = bgtype
 	add_child(bg)
@@ -302,11 +303,11 @@ func _ready():
 	nexttri = generate_pieces()
 func _process(delta):
 	if Global.level == 21 and life > 0:
-		if line < 100:
+		if line < 50:
 			bgm = 1
-		elif line < 200:
+		elif line < 100:
 			bgm = 3
-		elif line < 300:
+		elif line < 150:
 			bgm = 5
 		else:
 			bgm = 7
@@ -696,8 +697,16 @@ func process_mouse():
 		if score >= scoregoal:
 			if Global.level != 21 and Global.level > Global.highestlevel and !tutorial:
 				Global.highestlevel = Global.level
-		Global.toscene = "res://scene/menu/Title.tscn"
-		Global.preloadmenu = 1
+			match Global.level:
+				1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20:
+					Global.toscene = "res://scene/dialogue/Dialogue.tscn"
+					Global.dialogue = 2*Global.level + 1
+				_:
+					Global.toscene = "res://scene/menu/Title.tscn"
+					Global.preloadmenu = 1
+		else:
+			Global.toscene = "res://scene/menu/Title.tscn"
+			Global.preloadmenu = 1
 		Global.update_save()
 func generate_pieces():
 	var array = [randi()%3,randi()%3,randi()%3]

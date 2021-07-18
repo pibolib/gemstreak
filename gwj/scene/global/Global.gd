@@ -14,8 +14,9 @@ var track = [
 var currenttrack = 2
 var vol = 1
 var time = 0
-var currentscene = "res://scene/menu/Title.tscn"
-var toscene = "res://scene/menu/Title.tscn"
+var currentscene = "res://scene/dialogue/Dialogue.tscn"
+var toscene = "res://scene/dialogue/Dialogue.tscn"
+var dialogue = 0
 var transitiontime = 0
 var hasseeninstruction = false
 var bgmvol = 10
@@ -52,7 +53,6 @@ func _process(delta):
 		$BGM.playing = true
 	$CanvasLayer/Transition.rect_position.y = -200+400*transitiontime
 	if currentscene != toscene:
-		currenttrack = 0
 		transitiontime += delta
 		if transitiontime >= 0.5:
 			var status
